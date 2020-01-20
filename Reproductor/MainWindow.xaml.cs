@@ -18,6 +18,8 @@ using Microsoft.Win32;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
+using System.Windows.Threading;
+
 namespace Reproductor
 {
     /// <summary>
@@ -25,6 +27,8 @@ namespace Reproductor
     /// </summary>
     public partial class MainWindow : Window
     {
+        DispatcherTimer timer;
+
         // Lector de archivos
         AudioFileReader reader;
         // Comunicación con la tarjeta de audio exclusivo para salidas
@@ -37,6 +41,18 @@ namespace Reproductor
             btnReproducir.IsEnabled = false;
             btnPausa.IsEnabled = false;
             btnDetener.IsEnabled = false;
+
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(500);
+            timer.Tick += Timer_Tick;
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
+
+            sldTiempo.Value = reader.CurrentTime.Seconds;
+
         }
 
         void ListarDispositivosSalida()
@@ -69,6 +85,9 @@ namespace Reproductor
                     output.Play();
 
                     lblTiempoTotal.Text = reader.TotalTime.ToString().Substring(0,8);
+                    sldTiempo.Maximum = reader.TotalTime.TotalSeconds;
+
+                    timer.Start();
                 }
             }
             btnReproducir.IsEnabled = false;
@@ -78,6 +97,7 @@ namespace Reproductor
 
         private void Output_PlaybackStopped(object sender, StoppedEventArgs e)
         {
+            timer.Stop();
             reader.Dispose();
             output.Dispose();
         }
