@@ -34,6 +34,8 @@ namespace Reproductor
         // Comunicación con la tarjeta de audio exclusivo para salidas
         WaveOut output;
 
+        bool dragging = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -50,8 +52,10 @@ namespace Reproductor
         private void Timer_Tick(object sender, EventArgs e)
         {
             lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
-
-            sldTiempo.Value = reader.CurrentTime.Seconds;
+            if (!dragging)
+            {
+                sldTiempo.Value = reader.CurrentTime.Seconds;
+            }
 
         }
 
@@ -132,6 +136,20 @@ namespace Reproductor
                 btnReproducir.IsEnabled = true;
                 btnPausa.IsEnabled = false;
                 btnDetener.IsEnabled = true;
+            }
+        }
+
+        private void SldTiempo_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            dragging = true;
+        }
+
+        private void SldTiempo_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            dragging = false;
+            if(reader != null && output != null && output.PlaybackState != PlaybackState.Stopped)
+            {
+                reader.CurrentTime = TimeSpan.FromSeconds(sldTiempo.Value);
             }
         }
     }
