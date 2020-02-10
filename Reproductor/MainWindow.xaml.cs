@@ -39,6 +39,7 @@ namespace Reproductor
         // VolumeSampleProvider volume;
         EfectoVolumen efectoVolumen;
         EfectoFadeIn efectoFadeIn;
+        EfectoFadeOut efectoFadeOut;
 
         public MainWindow()
         {
@@ -62,7 +63,7 @@ namespace Reproductor
             lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
             if (!dragging)
             {
-                sldTiempo.Value = reader.CurrentTime.Seconds;
+                sldTiempo.Value = reader.CurrentTime.TotalSeconds;
             }
 
         }
@@ -97,13 +98,20 @@ namespace Reproductor
                     efectoVolumen = new EfectoVolumen(reader);
                     efectoVolumen.Volumen = (float)(sldVolumen.Value);
 
-                    efectoFadeIn = new EfectoFadeIn(reader, 5.0f);
+                    float duracionFadeIn = float.Parse(txtDuracionFadeIn.Text);
+
+                    //efectoFadeIn = new EfectoFadeIn(reader, duracionFadeIn);
+
+                    float inicioFadeOut = float.Parse(txtInicioFadeOut.Text);
+                    float duracionFadeOut = float.Parse(txtDuracionFadeOut.Text);
+
+                    efectoFadeOut = new EfectoFadeOut(reader, inicioFadeOut, duracionFadeOut);
 
                     output = new WaveOut();
                     output.DeviceNumber = cbDispositivoSalida.SelectedIndex;
                     output.PlaybackStopped += Output_PlaybackStopped;
                     output.Init(efectoVolumen);
-                    output.Init(efectoFadeIn);
+                    output.Init(efectoFadeOut);
                     output.Play();
                     
                     // Cambiar el volumen del output
