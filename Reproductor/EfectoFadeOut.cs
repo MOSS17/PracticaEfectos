@@ -13,8 +13,8 @@ namespace Reproductor
         private ISampleProvider fuente;
         private int muestrasLeidas = 0;
         private float segundosTranscurridos = 0;
-        private float duracion;
         private float inicio;
+        private float duracion;
 
         public EfectoFadeOut(ISampleProvider fuente, float inicio, float duracion)
         {
@@ -38,10 +38,10 @@ namespace Reproductor
             muestrasLeidas += read;
             segundosTranscurridos = (float)muestrasLeidas / (float)fuente.WaveFormat.SampleRate / (float)fuente.WaveFormat.Channels;
 
-            if (segundosTranscurridos >= inicio)
+            if (segundosTranscurridos > inicio)
             {
                 // Aplicar el efecto
-                float factorEscala = 1 / ( segundosTranscurridos / duracion);
+                float factorEscala = segundosTranscurridos / (segundosTranscurridos + duracion);
                 for (int i = 0; i < read; i++)
                 {
                     buffer[i + offset] *= factorEscala;
