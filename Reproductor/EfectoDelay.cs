@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,29 @@ namespace Reproductor
     {
         private ISampleProvider fuente;
 
-        public int offsetMiliSegundos;
+        private int offsetMiliSegundos;
+        public int OffsetMilisegundos
+        {
+            get
+            {
+                return offsetMiliSegundos;
+            }
+            set
+            {
+                if(value > 20000)
+                {
+                    offsetMiliSegundos = 20000;
+                }
+                else if(value < 0)
+                {
+                    offsetMiliSegundos = 0;
+                }
+                else
+                {
+                    offsetMiliSegundos = value;
+                }
+            }
+        }
 
         private List<float> muestras = new List<float>();
         private int tamañoBuffer;
